@@ -1,0 +1,1429 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VORTEX Industry 4.0 | Next-Gen Smart Manufacturing & Automation</title>
+
+    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Three.js CDN for 3D Cyber-Physical Rendering -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            dark: '#06090E',
+                            surface: '#0B0F17',
+                            card: '#111827',
+                            border: 'rgba(0, 242, 254, 0.15)',
+                            cyan: '#00F2FE',
+                            cyanglow: 'rgba(0, 242, 254, 0.4)',
+                            amber: '#FF9900',
+                            amberglow: 'rgba(255, 153, 0, 0.4)',
+                            emerald: '#10B981',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'glow-pulse': 'glowPulse 2s ease-in-out infinite alternate',
+                    },
+                    keyframes: {
+                        glowPulse: {
+                            '0%': { boxShadow: '0 0 10px rgba(0, 242, 254, 0.2)' },
+                            '100%': { boxShadow: '0 0 25px rgba(0, 242, 254, 0.7)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Glassmorphism Styles */
+        .glass-panel {
+            background: rgba(17, 24, 39, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 242, 254, 0.15);
+        }
+
+        .glass-panel-amber {
+            background: rgba(17, 24, 39, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 153, 0, 0.25);
+        }
+
+        .neon-border-cyan {
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.15), inset 0 0 15px rgba(0, 242, 254, 0.05);
+        }
+
+        .neon-text-cyan {
+            text-shadow: 0 0 10px rgba(0, 242, 254, 0.6);
+        }
+
+        .neon-text-amber {
+            text-shadow: 0 0 10px rgba(255, 153, 0, 0.6);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #06090E;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1F2937;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00F2FE;
+        }
+
+        /* Scanline Overlay for Industrial HUD Effect */
+        .scanline-overlay {
+            background: linear-gradient(
+                to bottom,
+                rgba(255,255,255,0),
+                rgba(255,255,255,0) 50%,
+                rgba(0, 242, 254, 0.03) 50%,
+                rgba(0, 242, 254, 0.03)
+            );
+            background-size: 100% 4px;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="bg-brand-dark text-slate-200 font-sans antialiased overflow-x-hidden selection:bg-brand-cyan selection:text-black">
+
+    <!-- Industrial HUD Scanline overlay -->
+    <div class="fixed inset-0 scanline-overlay z-50 pointer-events-none"></div>
+
+    <!-- MAIN WRAPPER -->
+    <div class="min-h-screen flex flex-col">
+
+        <!-- HEADER / NAVIGATION BAR -->
+        <header class="sticky top-0 z-40 bg-brand-dark/80 backdrop-blur-md border-b border-brand-border">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+                
+                <!-- Logo & Operational Status Badge -->
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-brand-cyan to-blue-600 flex items-center justify-center text-black font-bold text-xl shadow-[0_0_15px_rgba(0,242,254,0.5)]">
+                            <i class="fa-solid fa-microchip text-slate-900"></i>
+                        </div>
+                        <div>
+                            <span class="font-mono text-lg font-extrabold tracking-wider text-white">VORTEX<span class="text-brand-cyan">.I4</span></span>
+                            <span class="hidden sm:block text-[10px] font-mono text-slate-400 tracking-widest uppercase">Smart Automation Grid</span>
+                        </div>
+                    </div>
+                    <div class="hidden md:flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                        <span>FACTORY ONLINE (99.98% UPTIME)</span>
+                    </div>
+                </div>
+
+                <!-- Navigation Links -->
+                <nav class="hidden lg:flex items-center space-x-8 text-sm font-medium">
+                    <a href="#telemetry" class="hover:text-brand-cyan transition-colors py-1 border-b-2 border-transparent hover:border-brand-cyan">Telemetry</a>
+                    <a href="#inspector" class="hover:text-brand-cyan transition-colors py-1 border-b-2 border-transparent hover:border-brand-cyan">3D Component Inspector</a>
+                    <a href="#calculator" class="hover:text-brand-cyan transition-colors py-1 border-b-2 border-transparent hover:border-brand-cyan">Instant RFQ Calculator</a>
+                    <a href="#features" class="hover:text-brand-cyan transition-colors py-1 border-b-2 border-transparent hover:border-brand-cyan">Industry 4.0 Grid</a>
+                    <a href="#sustainability" class="hover:text-brand-cyan transition-colors py-1 border-b-2 border-transparent hover:border-brand-cyan">Eco-Metrics</a>
+                </nav>
+
+                <!-- Actions -->
+                <div class="flex items-center space-x-3">
+                    <button onclick="toggleModal(true)" class="relative inline-flex items-center justify-center p-0.5 overflow-hidden text-xs font-mono font-bold rounded-lg group bg-gradient-to-br from-brand-cyan to-amber-500 group-hover:from-brand-cyan group-hover:to-amber-500 hover:text-white text-white focus:ring-2 focus:outline-none focus:ring-brand-cyan shadow-[0_0_15px_rgba(0,242,254,0.3)] transition-all">
+                        <span class="relative px-4 py-2.5 transition-all ease-in duration-75 bg-brand-dark rounded-md group-hover:bg-opacity-0 flex items-center space-x-2">
+                            <i class="fa-solid fa-calculator text-brand-cyan group-hover:text-black transition-colors"></i>
+                            <span class="tracking-wider">REQUEST CUSTOM QUOTE</span>
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- HERO SECTION WITH INTERACTIVE THREE.JS CANVAS -->
+        <section class="relative min-h-[calc(100vh-5rem)] flex items-center justify-center overflow-hidden py-12 lg:py-0">
+            <!-- Background Canvas Container -->
+            <div id="hero-canvas-container" class="absolute inset-0 z-0"></div>
+
+            <!-- Dark Overlay Gradients -->
+            <div class="absolute inset-0 bg-gradient-to-r from-brand-dark via-brand-dark/80 to-transparent z-10 pointer-events-none"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-brand-dark via-transparent to-brand-dark/60 z-10 pointer-events-none"></div>
+
+            <!-- Content Grid -->
+            <div class="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                    
+                    <!-- Left Hero Text -->
+                    <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+                        
+                        <!-- HUD Badge -->
+                        <div class="inline-flex items-center space-x-3 px-3 py-1.5 rounded-md glass-panel text-xs font-mono text-brand-cyan border-brand-cyan/40">
+                            <span class="w-2 h-2 rounded-full bg-brand-cyan animate-pulse"></span>
+                            <span class="tracking-wider uppercase">CYBER-PHYSICAL PRODUCTION SYSTEM V4.8</span>
+                        </div>
+
+                        <!-- Headline -->
+                        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-tight">
+                            NEXT-GEN AUTOMATED <br>
+                            <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-cyan via-white to-brand-amber neon-text-cyan">
+                                PRECISION MANUFACTURING
+                            </span>
+                        </h1>
+
+                        <!-- Subhead -->
+                        <p class="text-slate-300 text-base sm:text-lg max-w-2xl leading-relaxed">
+                            Deploy high-precision robotic assembly cells, real-time edge telemetry, and sub-micron CNC machining powered by cloud-connected Digital Twins.
+                        </p>
+
+                        <!-- Key Performance Metrics Strip -->
+                        <div class="grid grid-cols-3 gap-4 pt-4 border-t border-slate-800">
+                            <div class="glass-panel p-3 rounded-lg text-left">
+                                <div class="text-xs font-mono text-slate-400">TOLERANCE</div>
+                                <div class="text-xl sm:text-2xl font-bold font-mono text-brand-cyan">±0.002 mm</div>
+                                <div class="text-[10px] text-emerald-400">Aerospace Grade</div>
+                            </div>
+                            <div class="glass-panel p-3 rounded-lg text-left">
+                                <div class="text-xs font-mono text-slate-400">CYCLES / HR</div>
+                                <div class="text-xl sm:text-2xl font-bold font-mono text-brand-amber">4,280</div>
+                                <div class="text-[10px] text-brand-cyan">+18% Efficiency</div>
+                            </div>
+                            <div class="glass-panel p-3 rounded-lg text-left">
+                                <div class="text-xs font-mono text-slate-400">AUTOMATION</div>
+                                <div class="text-xl sm:text-2xl font-bold font-mono text-white">99.4%</div>
+                                <div class="text-[10px] text-slate-400">Unmanned Operations</div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-4">
+                            <a href="#inspector" class="w-full sm:w-auto px-6 py-3.5 rounded-lg bg-brand-cyan text-brand-dark font-mono font-bold text-sm tracking-wider flex items-center justify-center space-x-2 hover:bg-white shadow-[0_0_20px_rgba(0,242,254,0.4)] transition-all">
+                                <i class="fa-solid fa-cube"></i>
+                                <span>LAUNCH 3D INSPECTOR</span>
+                            </a>
+                            <a href="#calculator" class="w-full sm:w-auto px-6 py-3.5 rounded-lg glass-panel text-white font-mono font-bold text-sm tracking-wider flex items-center justify-center space-x-2 hover:border-brand-amber hover:text-brand-amber transition-all">
+                                <i class="fa-solid fa-microchip"></i>
+                                <span>CALCULATE PRODUCTION COST</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Right Interactive HUD Card -->
+                    <div class="lg:col-span-5">
+                        <div class="glass-panel p-6 rounded-2xl relative overflow-hidden neon-border-cyan group">
+                            <!-- Glowing Accent Bar -->
+                            <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-brand-cyan via-amber-500 to-emerald-400"></div>
+
+                            <!-- Header -->
+                            <div class="flex items-center justify-between border-b border-slate-800 pb-4 mb-4">
+                                <div class="flex items-center space-x-3">
+                                    <i class="fa-solid fa-chart-network text-brand-cyan animate-pulse"></i>
+                                    <span class="font-mono text-sm font-bold text-white">REAL-TIME CELL MONITOR</span>
+                                </div>
+                                <span class="px-2 py-0.5 rounded bg-brand-cyan/10 border border-brand-cyan/30 text-[10px] font-mono text-brand-cyan">NODE #84-A</span>
+                            </div>
+
+                            <!-- Interactive Live Gauges -->
+                            <div class="space-y-4 font-mono">
+                                <div>
+                                    <div class="flex justify-between text-xs mb-1">
+                                        <span class="text-slate-400">Spindle Thermal Load (Cell 01)</span>
+                                        <span class="text-brand-cyan font-bold" id="hero-temp-val">42.8 °C</span>
+                                    </div>
+                                    <div class="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
+                                        <div id="hero-temp-bar" class="h-full bg-gradient-to-r from-brand-cyan to-brand-amber transition-all duration-500" style="width: 42.8%"></div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div class="flex justify-between text-xs mb-1">
+                                        <span class="text-slate-400">Vibration Frequency (RMS)</span>
+                                        <span class="text-emerald-400 font-bold" id="hero-vib-val">0.04 mm/s</span>
+                                    </div>
+                                    <div class="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
+                                        <div id="hero-vib-bar" class="h-full bg-emerald-400 transition-all duration-500" style="width: 15%"></div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div class="flex justify-between text-xs mb-1">
+                                        <span class="text-slate-400">Hydraulic Pressure</span>
+                                        <span class="text-brand-amber font-bold" id="hero-press-val">210 BAR</span>
+                                    </div>
+                                    <div class="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
+                                        <div id="hero-press-bar" class="h-full bg-brand-amber transition-all duration-500" style="width: 84%"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Terminal Logs Snippet -->
+                            <div class="mt-6 bg-black/60 rounded-lg p-3 font-mono text-[11px] text-slate-300 border border-slate-800 space-y-1">
+                                <div class="text-slate-500 flex justify-between">
+                                    <span>SYSTEM LOG STREAM</span>
+                                    <span class="text-brand-cyan">LIVE AUDIT</span>
+                                </div>
+                                <div class="text-emerald-400">&gt; Robotic Cell #04 tool offset auto-corrected.</div>
+                                <div class="text-brand-cyan">&gt; Optic machine vision inspect: 0 defects detected.</div>
+                                <div class="text-brand-amber">&gt; Automated pallet shuttle AGV-03 docked.</div>
+                            </div>
+
+                            <div class="mt-4 flex items-center justify-between text-[11px] text-slate-400 font-mono">
+                                <span>3D INTERACTIVE TWIN</span>
+                                <span class="text-brand-cyan animate-pulse">&bull; Drag viewport to tilt scene</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- LIVE TELEMETRY & SMART FACTORY DASHBOARD BAR -->
+        <section id="telemetry" class="py-12 bg-brand-surface border-y border-brand-border">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <!-- Section Header -->
+                <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 pb-4 border-b border-slate-800">
+                    <div>
+                        <div class="flex items-center space-x-2 text-brand-cyan font-mono text-xs tracking-wider uppercase mb-1">
+                            <i class="fa-solid fa-tower-broadcast"></i>
+                            <span>Real-Time Production Metrics</span>
+                        </div>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-white">SMART FACTORY TELEMETRY DASHBOARD</h2>
+                    </div>
+
+                    <!-- Speed Multiplier Controls for Live Counter Simulation -->
+                    <div class="mt-4 md:mt-0 flex items-center space-x-2 glass-panel px-3 py-1.5 rounded-lg border-brand-cyan/20">
+                        <span class="text-xs font-mono text-slate-400 mr-2">SIMULATION SPEED:</span>
+                        <button onclick="setSimSpeed(1)" id="btn-speed-1" class="px-2.5 py-1 rounded font-mono text-xs font-bold bg-brand-cyan text-black transition-all">1X</button>
+                        <button onclick="setSimSpeed(5)" id="btn-speed-5" class="px-2.5 py-1 rounded font-mono text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-800 transition-all">5X</button>
+                        <button onclick="setSimSpeed(10)" id="btn-speed-10" class="px-2.5 py-1 rounded font-mono text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-800 transition-all">10X</button>
+                    </div>
+                </div>
+
+                <!-- Metric Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    
+                    <!-- Metric Card 1: OEE -->
+                    <div class="glass-panel p-6 rounded-xl relative overflow-hidden group hover:border-brand-cyan/50 transition-all">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-mono text-slate-400 uppercase">OVERALL EQUIPMENT EFFECTIVENESS</span>
+                            <i class="fa-solid fa-gauge-high text-brand-cyan text-lg"></i>
+                        </div>
+                        <div class="text-3xl font-extrabold font-mono text-white mb-1">
+                            <span id="oee-metric">94.8</span>%
+                        </div>
+                        <div class="flex items-center justify-between text-xs font-mono text-emerald-400">
+                            <span>World-Class Standard</span>
+                            <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/30">+1.4% vs Shift</span>
+                        </div>
+                    </div>
+
+                    <!-- Metric Card 2: Units Produced Counter -->
+                    <div class="glass-panel p-6 rounded-xl relative overflow-hidden group hover:border-brand-amber/50 transition-all">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-mono text-slate-400 uppercase">SHIFT UNITS PRODUCED</span>
+                            <i class="fa-solid fa-boxes-stacked text-brand-amber text-lg"></i>
+                        </div>
+                        <div class="text-3xl font-extrabold font-mono text-brand-amber mb-1">
+                            <span id="units-metric">14,892</span>
+                        </div>
+                        <div class="flex items-center justify-between text-xs font-mono text-slate-400">
+                            <span>Target: 18,000 / shift</span>
+                            <span id="units-rate" class="text-brand-cyan">+4.2 pcs/sec</span>
+                        </div>
+                    </div>
+
+                    <!-- Metric Card 3: Active Robotic Cells -->
+                    <div class="glass-panel p-6 rounded-xl relative overflow-hidden group hover:border-emerald-500/50 transition-all">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-mono text-slate-400 uppercase">ACTIVE ROBOTIC CELLS</span>
+                            <i class="fa-solid fa-robot text-emerald-400 text-lg"></i>
+                        </div>
+                        <div class="text-3xl font-extrabold font-mono text-white mb-1">
+                            <span text-white>18 / 18</span>
+                        </div>
+                        <div class="flex items-center justify-between text-xs font-mono text-emerald-400">
+                            <span class="flex items-center space-x-1">
+                                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                                <span>100% Operational</span>
+                            </span>
+                            <span class="text-slate-400">0 Faults</span>
+                        </div>
+                    </div>
+
+                    <!-- Metric Card 4: Quality Defect Rate -->
+                    <div class="glass-panel p-6 rounded-xl relative overflow-hidden group hover:border-brand-cyan/50 transition-all">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-mono text-slate-400 uppercase">DEFECT ACCURACY (PPM)</span>
+                            <i class="fa-solid fa-bullseye text-brand-cyan text-lg"></i>
+                        </div>
+                        <div class="text-3xl font-extrabold font-mono text-brand-cyan mb-1">
+                            <span>12</span> <span class="text-sm text-slate-400 font-normal">PPM</span>
+                        </div>
+                        <div class="flex items-center justify-between text-xs font-mono text-slate-400">
+                            <span>Six Sigma Qualified</span>
+                            <span class="text-emerald-400">99.9988% Yield</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- INTERACTIVE EQUIPMENT & 3D COMPONENT INSPECTOR -->
+        <section id="inspector" class="py-20 relative">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <!-- Header -->
+                <div class="text-center max-w-3xl mx-auto mb-12">
+                    <div class="inline-flex items-center space-x-2 text-brand-cyan font-mono text-xs tracking-wider uppercase mb-2">
+                        <i class="fa-solid fa-magnifying-glass-chart"></i>
+                        <span>Digital Twin Inspection System</span>
+                    </div>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-white">INTERACTIVE EQUIPMENT 3D INSPECTOR</h2>
+                    <p class="mt-3 text-slate-400 text-base">
+                        Select a machinery asset below to inspect its cyber-physical component diagnostics, sub-system health, and real-time sensor waveforms.
+                    </p>
+                </div>
+
+                <!-- Asset Selector Tabs -->
+                <div class="flex flex-wrap justify-center gap-3 mb-8">
+                    <button onclick="selectEquipment('robot')" id="tab-robot" class="px-5 py-3 rounded-xl font-mono text-xs font-bold border transition-all flex items-center space-x-3 bg-brand-cyan text-black border-brand-cyan shadow-[0_0_15px_rgba(0,242,254,0.3)]">
+                        <i class="fa-solid fa-robot text-base"></i>
+                        <span>6-AXIS WELDING ROBOT (VORTEX-VX9)</span>
+                    </button>
+                    <button onclick="selectEquipment('cnc')" id="tab-cnc" class="px-5 py-3 rounded-xl font-mono text-xs font-bold border transition-all flex items-center space-x-3 glass-panel text-slate-300 border-slate-800 hover:border-brand-cyan">
+                        <i class="fa-solid fa-gear text-base text-brand-cyan"></i>
+                        <span>24,000 RPM CNC SPINDLE</span>
+                    </button>
+                    <button onclick="selectEquipment('agv')" id="tab-agv" class="px-5 py-3 rounded-xl font-mono text-xs font-bold border transition-all flex items-center space-x-3 glass-panel text-slate-300 border-slate-800 hover:border-brand-cyan">
+                        <i class="fa-solid fa-truck-ramp-box text-base text-brand-amber"></i>
+                        <span>AUTONOMOUS GUIDED VEHICLE (AGV)</span>
+                    </button>
+                </div>
+
+                <!-- Main Inspector Canvas & Diagnostics Layout -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+                    
+                    <!-- 3D Canvas Viewport (8 Columns) -->
+                    <div class="lg:col-span-8 glass-panel rounded-2xl p-4 relative min-h-[480px] flex flex-col justify-between overflow-hidden neon-border-cyan">
+                        
+                        <!-- Top HUD Bar -->
+                        <div class="flex items-center justify-between z-10 bg-black/40 p-3 rounded-xl border border-slate-800">
+                            <div>
+                                <span class="text-xs font-mono text-slate-400">ACTIVE MODEL: </span>
+                                <span id="inspector-model-title" class="text-sm font-mono font-bold text-white">6-AXIS WELDING ROBOT</span>
+                            </div>
+                            <div class="flex items-center space-x-3 text-xs font-mono">
+                                <span class="text-emerald-400 flex items-center space-x-1">
+                                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                                    <span>HEALTH: 99.4%</span>
+                                </span>
+                                <span class="text-slate-500">|</span>
+                                <span class="text-slate-400">CANVAS 3D RENDER</span>
+                            </div>
+                        </div>
+
+                        <!-- 3D Render Canvas Container -->
+                        <div id="inspector-canvas-container" class="absolute inset-0 z-0"></div>
+
+                        <!-- Interactive Hotspot Diagnostic Markers Overlay -->
+                        <div id="hotspots-overlay" class="absolute inset-0 z-10 pointer-events-none">
+                            <!-- Dynamic hotspot buttons rendered via JS -->
+                        </div>
+
+                        <!-- Canvas Controls Bar -->
+                        <div class="z-10 flex flex-wrap items-center justify-between gap-4 bg-black/40 p-3 rounded-xl border border-slate-800 font-mono text-xs text-slate-400">
+                            <div class="flex items-center space-x-4">
+                                <span class="flex items-center space-x-1">
+                                    <i class="fa-solid fa-hand-pointer text-brand-cyan"></i>
+                                    <span>Drag to Rotate 3D Model</span>
+                                </span>
+                                <span class="hidden sm:inline flex items-center space-x-1">
+                                    <i class="fa-solid fa-arrows-up-down text-brand-amber"></i>
+                                    <span>Scroll to Zoom</span>
+                                </span>
+                            </div>
+                            <button onclick="reset3DCamera()" class="px-3 py-1 rounded bg-slate-800 hover:bg-brand-cyan hover:text-black transition-all">
+                                RESET CAMERA
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Component Diagnostic Drawer (4 Columns) -->
+                    <div class="lg:col-span-4 glass-panel p-6 rounded-2xl flex flex-col justify-between space-y-6">
+                        
+                        <!-- Header -->
+                        <div>
+                            <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
+                                <span class="text-xs font-mono text-brand-cyan uppercase tracking-wider">COMPONENT DIAGNOSTICS</span>
+                                <span id="hotspot-id-badge" class="px-2 py-0.5 rounded bg-brand-cyan/20 border border-brand-cyan/40 text-[10px] font-mono text-brand-cyan">HOTSPOT #1</span>
+                            </div>
+                            <h3 id="hotspot-name" class="text-xl font-extrabold text-white font-mono">Precision Servo Harmonic Drive</h3>
+                            <p id="hotspot-desc" class="text-xs text-slate-400 mt-2 leading-relaxed">
+                                Heavy-duty brushless servo motor with harmonic drive gearbox ensuring ±0.001mm micro-repeatability across Joint 1.
+                            </p>
+                        </div>
+
+                        <!-- Live Waveform Chart -->
+                        <div class="space-y-2">
+                            <div class="flex justify-between items-center text-xs font-mono">
+                                <span class="text-slate-400">LIVE SENSOR WAVEFORM</span>
+                                <span class="text-emerald-400">STABLE NOISE FLOOR</span>
+                            </div>
+                            <div class="bg-black/60 p-2 rounded-xl border border-slate-800">
+                                <canvas id="waveform-canvas" width="300" height="90" class="w-full h-24"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Diagnostic Data Matrix -->
+                        <div class="space-y-3 font-mono text-xs">
+                            <div class="flex justify-between p-2 rounded bg-slate-900/60 border border-slate-800">
+                                <span class="text-slate-400">Operating Temperature:</span>
+                                <span id="diag-temp" class="text-white font-bold">38.4 °C</span>
+                            </div>
+                            <div class="flex justify-between p-2 rounded bg-slate-900/60 border border-slate-800">
+                                <span class="text-slate-400">Peak Torque Output:</span>
+                                <span id="diag-torque" class="text-brand-cyan font-bold">142.5 Nm</span>
+                            </div>
+                            <div class="flex justify-between p-2 rounded bg-slate-900/60 border border-slate-800">
+                                <span class="text-slate-400">Est. Remaining Life (RUL):</span>
+                                <span id="diag-rul" class="text-emerald-400 font-bold">14,200 Hours</span>
+                            </div>
+                        </div>
+
+                        <!-- Diagnostic Action Buttons -->
+                        <div class="pt-2 border-t border-slate-800 flex items-center space-x-3">
+                            <button onclick="triggerCalibration()" class="w-full py-2.5 rounded-lg bg-brand-cyan/10 border border-brand-cyan/40 text-brand-cyan font-mono text-xs font-bold hover:bg-brand-cyan hover:text-black transition-all">
+                                RE-CALIBRATE SENSOR
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DYNAMIC RFQ / PRODUCTION COST CALCULATOR TOOL -->
+        <section id="calculator" class="py-20 bg-brand-surface border-y border-brand-border">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <!-- Section Header -->
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <div class="inline-flex items-center space-x-2 text-brand-amber font-mono text-xs tracking-wider uppercase mb-2">
+                        <i class="fa-solid fa-calculator"></i>
+                        <span>Instant Automated Estimator</span>
+                    </div>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-white">DYNAMIC PRODUCTION COST CALCULATOR</h2>
+                    <p class="mt-3 text-slate-400 text-base">
+                        Configure raw material alloys, precision tolerances, and production volume to generate an instant algorithmic cost breakdown and lead-time quote.
+                    </p>
+                </div>
+
+                <!-- Calculator Container Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                    
+                    <!-- Left Inputs Form (7 Cols) -->
+                    <div class="lg:col-span-7 glass-panel p-6 sm:p-8 rounded-2xl space-y-6 border-brand-cyan/20">
+                        
+                        <!-- 1. Material Selector -->
+                        <div>
+                            <label class="block font-mono text-xs text-brand-cyan font-bold uppercase tracking-wider mb-3">
+                                1. SELECT RAW MATERIAL ALLOY
+                            </label>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <button onclick="setCalcMaterial('titanium')" id="mat-titanium" class="p-3 rounded-xl border font-mono text-xs text-left transition-all border-brand-cyan bg-brand-cyan/10 text-white shadow-[0_0_10px_rgba(0,242,254,0.2)]">
+                                    <div class="font-bold text-sm">Titanium Grade 5</div>
+                                    <div class="text-[10px] text-slate-400 mt-1">Ti-6Al-4V Aerospace</div>
+                                </button>
+                                <button onclick="setCalcMaterial('aluminum')" id="mat-aluminum" class="p-3 rounded-xl border font-mono text-xs text-left transition-all border-slate-800 bg-slate-900/60 text-slate-300 hover:border-slate-600">
+                                    <div class="font-bold text-sm">Aluminum 7075-T6</div>
+                                    <div class="text-[10px] text-slate-400 mt-1">High Tensile Strength</div>
+                                </button>
+                                <button onclick="setCalcMaterial('steel')" id="mat-steel" class="p-3 rounded-xl border font-mono text-xs text-left transition-all border-slate-800 bg-slate-900/60 text-slate-300 hover:border-slate-600">
+                                    <div class="font-bold text-sm">Stainless 316L</div>
+                                    <div class="text-[10px] text-slate-400 mt-1">Corrosion Resistant</div>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 2. Manufacturing Process -->
+                        <div>
+                            <label class="block font-mono text-xs text-slate-300 font-bold uppercase tracking-wider mb-3">
+                                2. MANUFACTURING PROCESS METHOD
+                            </label>
+                            <select id="calc-process" onchange="recalculateCost()" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 font-mono text-sm text-white focus:border-brand-cyan focus:outline-none">
+                                <option value="cnc5">5-Axis High Precision CNC Milling</option>
+                                <option value="additive">Direct Metal Laser Sintering (3D Metal Print)</option>
+                                <option value="welding">Automated Robotic Arc Welding Assembly</option>
+                                <option value="laser">High-Power Fiber Laser Cutting & Bending</option>
+                            </select>
+                        </div>
+
+                        <!-- 3. Production Volume Slider -->
+                        <div>
+                            <div class="flex justify-between items-center mb-2 font-mono text-xs">
+                                <span class="text-slate-300 font-bold uppercase">3. PRODUCTION VOLUME (UNITS)</span>
+                                <span id="calc-qty-val" class="text-brand-amber font-bold text-base">500 Units</span>
+                            </div>
+                            <input type="range" id="calc-qty-slider" min="1" max="5000" step="1" value="500" oninput="recalculateCost()" class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-brand-amber">
+                            <div class="flex justify-between text-[10px] font-mono text-slate-500 mt-1">
+                                <span>1 Unit (Prototype)</span>
+                                <span>1,000 Units (Bulk Discount)</span>
+                                <span>5,000 Units (High Volume)</span>
+                            </div>
+                        </div>
+
+                        <!-- 4. Machining Tolerance & Surface Finish -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block font-mono text-xs text-slate-300 font-bold uppercase mb-2">TOLERANCE PRECISION</label>
+                                <select id="calc-tolerance" onchange="recalculateCost()" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 font-mono text-xs text-white focus:border-brand-cyan focus:outline-none">
+                                    <option value="standard">Standard Industrial (±0.05 mm)</option>
+                                    <option value="precision" selected>High Precision (±0.01 mm)</option>
+                                    <option value="aerospace">Aerospace Sub-Micron (±0.002 mm)</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block font-mono text-xs text-slate-300 font-bold uppercase mb-2">SURFACE FINISH</label>
+                                <select id="calc-finish" onchange="recalculateCost()" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 font-mono text-xs text-white focus:border-brand-cyan focus:outline-none">
+                                    <option value="as-machined">As-Machined (Ra 3.2 µm)</option>
+                                    <option value="anodized" selected>Type III Hardcoat Anodize</option>
+                                    <option value="electropolish">Mirror Electropolish (Ra 0.4 µm)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Pricing Breakdown Card (5 Cols) -->
+                    <div class="lg:col-span-5 glass-panel p-6 sm:p-8 rounded-2xl space-y-6 neon-border-cyan flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between border-b border-slate-800 pb-4 mb-6">
+                                <span class="font-mono text-xs text-brand-cyan font-bold uppercase">INSTANT ESTIMATE SUMMARY</span>
+                                <span class="px-2 py-1 rounded bg-emerald-500/10 border border-emerald-500/30 text-[10px] font-mono text-emerald-400">LIVE ALGORITHM</span>
+                            </div>
+
+                            <!-- Big Total Price Display -->
+                            <div class="mb-6">
+                                <div class="text-xs font-mono text-slate-400">TOTAL ESTIMATED COST (USD)</div>
+                                <div class="text-4xl font-extrabold font-mono text-white mt-1">
+                                    $<span id="calc-total-price">18,450.00</span>
+                                </div>
+                                <div class="text-xs font-mono text-brand-cyan mt-1">
+                                    Per Unit Cost: $<span id="calc-unit-price">36.90</span>
+                                </div>
+                            </div>
+
+                            <!-- Cost Breakdown Visual Bar -->
+                            <div class="space-y-3 font-mono text-xs">
+                                <span class="text-slate-400">COST STRUCTURE BREAKDOWN</span>
+                                <div class="w-full h-3 rounded-full bg-slate-800 overflow-hidden flex">
+                                    <div id="bar-material" class="h-full bg-brand-cyan transition-all duration-300" style="width: 45%" title="Raw Material"></div>
+                                    <div id="bar-machining" class="h-full bg-brand-amber transition-all duration-300" style="width: 35%" title="CNC Machining"></div>
+                                    <div id="bar-quality" class="h-full bg-emerald-400 transition-all duration-300" style="width: 20%" title="QA Inspection"></div>
+                                </div>
+                                <div class="flex justify-between text-[11px] text-slate-400 pt-1">
+                                    <span class="flex items-center space-x-1"><span class="w-2 h-2 rounded-full bg-brand-cyan"></span><span>Raw Material</span></span>
+                                    <span class="flex items-center space-x-1"><span class="w-2 h-2 rounded-full bg-brand-amber"></span><span>Machining</span></span>
+                                    <span class="flex items-center space-x-1"><span class="w-2 h-2 rounded-full bg-emerald-400"></span><span>QA & Finish</span></span>
+                                </div>
+                            </div>
+
+                            <!-- Delivery & Lead Time -->
+                            <div class="mt-6 p-4 rounded-xl bg-slate-900/80 border border-slate-800 font-mono text-xs space-y-2">
+                                <div class="flex justify-between">
+                                    <span class="text-slate-400">Estimated Lead Time:</span>
+                                    <span id="calc-leadtime" class="text-white font-bold">4 Business Days</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-400">Shipping Origin:</span>
+                                    <span class="text-slate-300">Smart Hub #02 (Stuttgart)</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CTA Buttons -->
+                        <div class="space-y-3 pt-6 border-t border-slate-800">
+                            <button onclick="toggleModal(true)" class="w-full py-3.5 rounded-xl bg-brand-cyan text-brand-dark font-mono font-bold text-sm tracking-wider hover:bg-white shadow-[0_0_15px_rgba(0,242,254,0.4)] transition-all">
+                                SUBMIT FORMAL RFQ WITH CAD
+                            </button>
+                            <button onclick="exportQuoteSummary()" class="w-full py-2.5 rounded-xl glass-panel text-slate-300 font-mono text-xs font-bold hover:text-white transition-all">
+                                <i class="fa-solid fa-download mr-1"></i> DOWNLOAD QUOTE SPECIFICATION PDF
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SUSTAINABLE MANUFACTURING & INDUSTRY 4.0 GRID -->
+        <section id="features" class="py-20 relative">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <!-- Section Header -->
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <div class="inline-flex items-center space-x-2 text-brand-cyan font-mono text-xs tracking-wider uppercase mb-2">
+                        <i class="fa-solid fa-microchip"></i>
+                        <span>Smart Architecture</span>
+                    </div>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-white">INDUSTRY 4.0 CAPABILITY MATRIX</h2>
+                    <p class="mt-3 text-slate-400 text-base">
+                        Engineered for zero-downtime cyber-physical operations, zero-defect optical inspection, and net-zero sustainable manufacturing.
+                    </p>
+                </div>
+
+                <!-- Feature Grid (6 Cards) -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    
+                    <!-- Card 1 -->
+                    <div class="glass-panel p-6 rounded-2xl hover:border-brand-cyan transition-all group">
+                        <div class="w-12 h-12 rounded-xl bg-brand-cyan/10 border border-brand-cyan/30 flex items-center justify-center text-brand-cyan text-xl mb-4 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-eye"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-white font-mono mb-2">Machine Vision Edge AI</h3>
+                        <p class="text-xs text-slate-400 leading-relaxed">
+                            Ultra-high speed 4K cameras running deep learning neural nets inspect parts inline at 60 fps, capturing sub-pixel micro-fractures instantly.
+                        </p>
+                    </div>
+
+                    <!-- Card 2 -->
+                    <div class="glass-panel p-6 rounded-2xl hover:border-brand-amber transition-all group">
+                        <div class="w-12 h-12 rounded-xl bg-brand-amber/10 border border-brand-amber/30 flex items-center justify-center text-brand-amber text-xl mb-4 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-chart-line-up"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-white font-mono mb-2">Predictive Health Maintenance</h3>
+                        <p class="text-xs text-slate-400 leading-relaxed">
+                            Vibration, acoustic emission, and thermal telemetry algorithms predict spindle and joint wear up to 120 operating hours before breakdown.
+                        </p>
+                    </div>
+
+                    <!-- Card 3 -->
+                    <div class="glass-panel p-6 rounded-2xl hover:border-emerald-500 transition-all group">
+                        <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-xl mb-4 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-leaf"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-white font-mono mb-2">Closed-Loop Scrap Recovery</h3>
+                        <p class="text-xs text-slate-400 leading-relaxed">
+                            98.4% of titanium and aluminum metal shavings are continuously collected, briquetted, and vacuum re-melted into additive stock.
+                        </p>
+                    </div>
+
+                    <!-- Card 4 -->
+                    <div class="glass-panel p-6 rounded-2xl hover:border-brand-cyan transition-all group">
+                        <div class="w-12 h-12 rounded-xl bg-brand-cyan/10 border border-brand-cyan/30 flex items-center justify-center text-brand-cyan text-xl mb-4 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-network-wired"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-white font-mono mb-2">OPC-UA Cyber-Physical Mesh</h3>
+                        <p class="text-xs text-slate-400 leading-relaxed">
+                            Interoperable communication protocol connecting multi-vendor PLCs, CNC machines, and AGV fleets with sub-5ms low latency.
+                        </p>
+                    </div>
+
+                    <!-- Card 5 -->
+                    <div class="glass-panel p-6 rounded-2xl hover:border-brand-amber transition-all group">
+                        <div class="w-12 h-12 rounded-xl bg-brand-amber/10 border border-brand-amber/30 flex items-center justify-center text-brand-amber text-xl mb-4 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-shield-halved"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-white font-mono mb-2">Immutable Blockchain Traceability</h3>
+                        <p class="text-xs text-slate-400 leading-relaxed">
+                            Cryptographic batch log serialization ensures absolute aerospace compliance and origin verification from raw ingot to final shipment.
+                        </p>
+                    </div>
+
+                    <!-- Card 6 -->
+                    <div class="glass-panel p-6 rounded-2xl hover:border-emerald-500 transition-all group">
+                        <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-xl mb-4 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-solar-panel"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-white font-mono mb-2">Solar Microgrid Direct-Drive</h3>
+                        <p class="text-xs text-slate-400 leading-relaxed">
+                            Facility power dynamically balances between rooftop solar arrays and regenerative brake deceleration during robot braking cycles.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SUSTAINABILITY & ECO-METRICS SHOWCASE -->
+        <section id="sustainability" class="py-16 bg-brand-surface border-t border-brand-border">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="glass-panel-amber p-8 rounded-3xl relative overflow-hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                        <div class="lg:col-span-8 space-y-4">
+                            <div class="inline-flex items-center space-x-2 text-brand-amber font-mono text-xs uppercase tracking-wider">
+                                <i class="fa-solid fa-earth-americas"></i>
+                                <span>SUSTAINABILITY INITIATIVE</span>
+                            </div>
+                            <h3 class="text-2xl sm:text-3xl font-extrabold text-white">NET-ZERO CARBON PRECISION FACTORY</h3>
+                            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                                Our smart automated facilities operate with 100% water recirculation coolant loops, zero landfill waste output, and real-time carbon footprint calculation for every manufactured part batch.
+                            </p>
+                        </div>
+                        <div class="lg:col-span-4 grid grid-cols-2 gap-4 font-mono">
+                            <div class="bg-black/50 p-4 rounded-xl border border-slate-800 text-center">
+                                <div class="text-2xl font-bold text-emerald-400">-42%</div>
+                                <div class="text-[10px] text-slate-400 mt-1">CARBON FOOTPRINT</div>
+                            </div>
+                            <div class="bg-black/50 p-4 rounded-xl border border-slate-800 text-center">
+                                <div class="text-2xl font-bold text-brand-cyan">100%</div>
+                                <div class="text-[10px] text-slate-400 mt-1">COOLANT RECYCLED</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="bg-brand-dark border-t border-brand-border py-12">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8 font-mono text-xs">
+                    
+                    <!-- Col 1 -->
+                    <div class="space-y-3">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-8 h-8 rounded bg-brand-cyan flex items-center justify-center text-black font-bold">
+                                <i class="fa-solid fa-microchip"></i>
+                            </div>
+                            <span class="text-sm font-bold text-white tracking-wider">VORTEX.I4</span>
+                        </div>
+                        <p class="text-slate-400 text-[11px] leading-relaxed">
+                            Industrial Cyber-Physical Systems, CNC Machining & Autonomous Logistics Solutions.
+                        </p>
+                    </div>
+
+                    <!-- Col 2 -->
+                    <div>
+                        <div class="text-white font-bold mb-3 uppercase text-brand-cyan">Certifications</div>
+                        <ul class="space-y-1.5 text-slate-400">
+                            <li><i class="fa-solid fa-check text-emerald-400 mr-1.5"></i> ISO 9001:2015 Quality Management</li>
+                            <li><i class="fa-solid fa-check text-emerald-400 mr-1.5"></i> AS9100D Aerospace Standard</li>
+                            <li><i class="fa-solid fa-check text-emerald-400 mr-1.5"></i> ISO 14001 Environmental</li>
+                        </ul>
+                    </div>
+
+                    <!-- Col 3 -->
+                    <div>
+                        <div class="text-white font-bold mb-3 uppercase text-brand-cyan">Global Smart Hubs</div>
+                        <ul class="space-y-1.5 text-slate-400">
+                            <li>&bull; Hub #01: Detroit, USA</li>
+                            <li>&bull; Hub #02: Stuttgart, Germany</li>
+                            <li>&bull; Hub #03: Tokyo, Japan</li>
+                        </ul>
+                    </div>
+
+                    <!-- Col 4 -->
+                    <div>
+                        <div class="text-white font-bold mb-3 uppercase text-brand-cyan">System Status</div>
+                        <div class="p-3 rounded bg-slate-900 border border-slate-800 space-y-1 text-[11px]">
+                            <div class="text-emerald-400">&bull; API Gateway: 100% Operational</div>
+                            <div class="text-brand-cyan">&bull; Telemetry Latency: 4ms</div>
+                            <div class="text-slate-400">&bull; Version: 4.8.2-stable</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-6 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between text-[11px] font-mono text-slate-500">
+                    <div>&copy; 2026 VORTEX Automation Inc. All rights reserved.</div>
+                    <div class="flex space-x-4 mt-2 sm:mt-0">
+                        <a href="#" class="hover:text-brand-cyan">Privacy Policy</a>
+                        <a href="#" class="hover:text-brand-cyan">Security Audit</a>
+                        <a href="#" class="hover:text-brand-cyan">API Specs</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- RFQ CONTACT MODAL OVERLAY -->
+    <div id="rfq-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+        <div class="glass-panel p-6 sm:p-8 rounded-2xl max-w-xl w-full border-brand-cyan relative max-h-[90vh] overflow-y-auto">
+            
+            <!-- Close Button -->
+            <button onclick="toggleModal(false)" class="absolute top-4 right-4 text-slate-400 hover:text-white text-xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <!-- Modal Header -->
+            <div class="mb-6">
+                <div class="text-xs font-mono text-brand-cyan uppercase font-bold">PRODUCTION RFQ FORM</div>
+                <h3 class="text-2xl font-extrabold text-white font-mono mt-1">REQUEST A FORMAL QUOTE</h3>
+                <p class="text-xs text-slate-400 mt-1">
+                    Upload your CAD file (.STEP, .IGES) or submit custom engineering specifications.
+                </p>
+            </div>
+
+            <!-- Form -->
+            <form onsubmit="handleFormSubmit(event)" class="space-y-4 font-mono text-xs">
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-slate-300 mb-1">FULL NAME *</label>
+                        <input type="text" required placeholder="Alex Mercer" class="w-full bg-slate-900 border border-slate-800 rounded-lg p-2.5 text-white focus:border-brand-cyan focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-slate-300 mb-1">WORK EMAIL *</label>
+                        <input type="email" required placeholder="alex@aerospace.com" class="w-full bg-slate-900 border border-slate-800 rounded-lg p-2.5 text-white focus:border-brand-cyan focus:outline-none">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-slate-300 mb-1">COMPANY / ORGANIZATION</label>
+                    <input type="text" placeholder="Vortex Dynamics Corp" class="w-full bg-slate-900 border border-slate-800 rounded-lg p-2.5 text-white focus:border-brand-cyan focus:outline-none">
+                </div>
+
+                <!-- CAD Drag and Drop zone -->
+                <div>
+                    <label class="block text-slate-300 mb-1">ATTACH CAD MODEL (.STEP / .IGES)</label>
+                    <div class="border-2 border-dashed border-slate-800 hover:border-brand-cyan rounded-xl p-6 text-center cursor-pointer bg-slate-900/40 transition-colors">
+                        <i class="fa-solid fa-cloud-arrow-up text-brand-cyan text-2xl mb-2"></i>
+                        <div class="text-slate-300 font-bold">Drag & Drop 3D CAD File Here</div>
+                        <div class="text-[10px] text-slate-500 mt-1">Max File Size: 150MB</div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-slate-300 mb-1">PROJECT NOTES & SPECIFICATIONS</label>
+                    <textarea rows="3" placeholder="Specify tight tolerances, special heat treatment, anodize color, or target delivery date..." class="w-full bg-slate-900 border border-slate-800 rounded-lg p-2.5 text-white focus:border-brand-cyan focus:outline-none"></textarea>
+                </div>
+
+                <div class="pt-4 flex justify-end space-x-3">
+                    <button type="button" onclick="toggleModal(false)" class="px-4 py-2.5 rounded-lg text-slate-400 hover:text-white">
+                        CANCEL
+                    </button>
+                    <button type="submit" class="px-6 py-2.5 rounded-lg bg-brand-cyan text-brand-dark font-bold hover:bg-white transition-all shadow-[0_0_15px_rgba(0,242,254,0.4)]">
+                        SUBMIT RFQ PACKAGE
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 hidden glass-panel border-brand-cyan p-4 rounded-xl shadow-2xl flex items-center space-x-3 font-mono text-xs text-white max-w-sm">
+        <div class="w-8 h-8 rounded-full bg-brand-cyan/20 border border-brand-cyan flex items-center justify-center text-brand-cyan flex-shrink-0">
+            <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <div id="toast-message">RFQ Request Submitted Successfully!</div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC ENGINE -->
+    <script>
+        /* ==========================================================================
+           1. THREE.JS HERO CANVAS (3D DIGITAL TWIN CYBER ASSEMBLY)
+           ========================================================================== */
+        let heroScene, heroCamera, heroRenderer, heroAssemblyGroup;
+        let isHeroHovered = false;
+
+        function initHero3D() {
+            const container = document.getElementById('hero-canvas-container');
+            if (!container) return;
+
+            // Scene setup
+            heroScene = new THREE.Scene();
+            heroScene.fog = new THREE.FogExp2(0x06090E, 0.03);
+
+            // Camera setup
+            heroCamera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+            heroCamera.position.set(0, 5, 15);
+
+            // Renderer setup
+            heroRenderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+            heroRenderer.setSize(container.clientWidth, container.clientHeight);
+            heroRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            container.appendChild(heroRenderer.domElement);
+
+            // Assembly Parent Group
+            heroAssemblyGroup = new THREE.Group();
+            heroScene.add(heroAssemblyGroup);
+
+            // Construct Cybernetic Industrial Ring & Robotic Node
+            const ringGeo = new THREE.TorusGeometry(3.5, 0.08, 16, 100);
+            const ringMat = new THREE.MeshBasicMaterial({ color: 0x00F2FE, wireframe: true });
+            const ringMesh = new THREE.Mesh(ringGeo, ringMat);
+            ringMesh.rotation.x = Math.PI / 2;
+            heroAssemblyGroup.add(ringMesh);
+
+            const innerRingGeo = new THREE.TorusGeometry(2.2, 0.05, 16, 60);
+            const innerRingMat = new THREE.MeshBasicMaterial({ color: 0xFF9900, wireframe: true });
+            const innerRingMesh = new THREE.Mesh(innerRingGeo, innerRingMat);
+            innerRingMesh.rotation.x = Math.PI / 3;
+            heroAssemblyGroup.add(innerRingMesh);
+
+            // Central Mechanical Spindle Core
+            const coreGeo = new THREE.CylinderGeometry(0.8, 1.2, 2.5, 12);
+            const coreMat = new THREE.MeshBasicMaterial({ color: 0x111827, wireframe: true });
+            const coreMesh = new THREE.Mesh(coreGeo, coreMat);
+            heroAssemblyGroup.add(coreMesh);
+
+            // Floating Node Particles Cloud
+            const particleCount = 120;
+            const particleGeo = new THREE.BufferGeometry();
+            const positions = new Float32Array(particleCount * 3);
+
+            for (let i = 0; i < particleCount * 3; i += 3) {
+                positions[i] = (Math.random() - 0.5) * 12;
+                positions[i+1] = (Math.random() - 0.5) * 8;
+                positions[i+2] = (Math.random() - 0.5) * 12;
+            }
+
+            particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            const particleMat = new THREE.PointsMaterial({
+                color: 0x00F2FE,
+                size: 0.1,
+                transparent: true,
+                opacity: 0.8
+            });
+            const particleSystem = new THREE.Points(particleGeo, particleMat);
+            heroScene.add(particleSystem);
+
+            // Grid Floor
+            const gridHelper = new THREE.GridHelper(30, 30, 0x00F2FE, 0x1F2937);
+            gridHelper.position.y = -3;
+            heroScene.add(gridHelper);
+
+            // Mouse Interaction Parallax
+            let mouseX = 0, mouseY = 0;
+            document.addEventListener('mousemove', (e) => {
+                mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+                mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+            });
+
+            // Animation Loop
+            function animateHero() {
+                requestAnimationFrame(animateHero);
+
+                heroAssemblyGroup.rotation.y += 0.005;
+                ringMesh.rotation.z += 0.003;
+                innerRingMesh.rotation.y -= 0.007;
+
+                // Parallax Camera Sway
+                heroCamera.position.x += (mouseX * 2 - heroCamera.position.x) * 0.05;
+                heroCamera.position.y += (-mouseY * 2 + 5 - heroCamera.position.y) * 0.05;
+                heroCamera.lookAt(0, 0, 0);
+
+                heroRenderer.render(heroScene, heroCamera);
+            }
+            animateHero();
+
+            // Resize Listener
+            window.addEventListener('resize', () => {
+                if (!container) return;
+                heroCamera.aspect = container.clientWidth / container.clientHeight;
+                heroCamera.updateProjectionMatrix();
+                heroRenderer.setSize(container.clientWidth, container.clientHeight);
+            });
+        }
+
+        /* ==========================================================================
+           2. THREE.JS EQUIPMENT INSPECTOR (3D MODELS & HOTSPOT DIAGNOSTICS)
+           ========================================================================== */
+        let inspectorScene, inspectorCamera, inspectorRenderer, activeModelGroup;
+        let activeEquipmentType = 'robot';
+        let isDragging = false, previousMousePosition = { x: 0, y: 0 };
+
+        const equipmentData = {
+            robot: {
+                title: "6-AXIS WELDING ROBOT (VORTEX-VX9)",
+                hotspot: {
+                    name: "Precision Servo Harmonic Drive",
+                    desc: "Brushless servo motor with zero-backlash harmonic drive gearbox supporting Joint 1 rotational axis.",
+                    temp: "38.4 °C",
+                    torque: "142.5 Nm",
+                    rul: "14,200 Hours"
+                }
+            },
+            cnc: {
+                title: "24,000 RPM HIGH-SPEED CNC SPINDLE",
+                hotspot: {
+                    name: "Hybrid Ceramic Ball Bearings",
+                    desc: "Sub-micron friction hybrid ceramic bearings with active oil-air mist lubrication system.",
+                    temp: "44.1 °C",
+                    torque: "88.2 Nm",
+                    rul: "9,800 Hours"
+                }
+            },
+            agv: {
+                title: "AUTONOMOUS GUIDED VEHICLE (AGV FLEET)",
+                hotspot: {
+                    name: "360° Solid-State LiDAR Sensor Dome",
+                    desc: "High-density 3D spatial mapping scanner with 50-meter range for real-time warehouse navigation.",
+                    temp: "32.0 °C",
+                    torque: "N/A (Optical)",
+                    rul: "22,000 Hours"
+                }
+            }
+        };
+
+        function initInspector3D() {
+            const container = document.getElementById('inspector-canvas-container');
+            if (!container) return;
+
+            inspectorScene = new THREE.Scene();
+            inspectorCamera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+            inspectorCamera.position.set(0, 3, 8);
+
+            inspectorRenderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+            inspectorRenderer.setSize(container.clientWidth, container.clientHeight);
+            inspectorRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            container.appendChild(inspectorRenderer.domElement);
+
+            activeModelGroup = new THREE.Group();
+            inspectorScene.add(activeModelGroup);
+
+            // Lighting
+            const dirLight1 = new THREE.DirectionalLight(0x00F2FE, 1.5);
+            dirLight1.position.set(5, 10, 7);
+            inspectorScene.add(dirLight1);
+
+            const dirLight2 = new THREE.DirectionalLight(0xFF9900, 1.0);
+            dirLight2.position.set(-5, -5, -5);
+            inspectorScene.add(dirLight2);
+
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+            inspectorScene.add(ambientLight);
+
+            // Load initial Model
+            buildRobotModel();
+
+            // Drag Controls for Rotation
+            const dom = inspectorRenderer.domElement;
+            dom.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                previousMousePosition = { x: e.clientX, y: e.clientY };
+            });
+
+            dom.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                const deltaMove = {
+                    x: e.clientX - previousMousePosition.x,
+                    y: e.clientY - previousMousePosition.y
+                };
+
+                activeModelGroup.rotation.y += deltaMove.x * 0.01;
+                activeModelGroup.rotation.x += deltaMove.y * 0.01;
+
+                previousMousePosition = { x: e.clientX, y: e.clientY };
+            });
+
+            window.addEventListener('mouseup', () => { isDragging = false; });
+
+            // Scroll Zoom
+            dom.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                inspectorCamera.position.z += e.deltaY * 0.005;
+                inspectorCamera.position.z = Math.max(3, Math.min(15, inspectorCamera.position.z));
+            }, { passive: false });
+
+            // Animation Loop
+            function animateInspector() {
+                requestAnimationFrame(animateInspector);
+                if (!isDragging) {
+                    activeModelGroup.rotation.y += 0.003;
+                }
+                inspectorRenderer.render(inspectorScene, inspectorCamera);
+            }
+            animateInspector();
+
+            window.addEventListener('resize', () => {
+                if (!container) return;
+                inspectorCamera.aspect = container.clientWidth / container.clientHeight;
+                inspectorCamera.updateProjectionMatrix();
+                inspectorRenderer.setSize(container.clientWidth, container.clientHeight);
+            });
+
+            // Start Live Waveform Canvas Rendering
+            initWaveformCanvas();
+        }
+
+        // Model Builders (Procedural Geometry Constructs)
+        function clearInspectorModel() {
+            while (activeModelGroup.children.length > 0) {
+                activeModelGroup.remove(activeModelGroup.children[0]);
+            }
+        }
+
+        function buildRobotModel() {
+            clearInspectorModel();
+            const baseGeo = new THREE.CylinderGeometry(1.5, 1.8, 0.6, 24);
+            const baseMat = new THREE.MeshStandardMaterial({ color: 0x111827, metalness: 0.8, roughness: 0.2 });
+            const base = new THREE.Mesh(baseGeo, baseMat);
+            activeModelGroup.add(base);
+
+            const arm1Geo = new THREE.CylinderGeometry(0.3, 0.3, 2.5, 16);
+            const arm1Mat = new THREE.MeshStandardMaterial({ color: 0x00F2FE, metalness: 0.5, roughness: 0.3 });
+            const arm1 = new THREE.Mesh(arm1Geo, arm1Mat);
+            arm1.position.set(0, 1.5, 0);
+            arm1.rotation.z = Math.PI / 6;
+            activeModelGroup.add(arm1);
+
+            const jointGeo = new THREE.SphereGeometry(0.5, 16, 16);
+            const jointMat = new THREE.MeshStandardMaterial({ color: 0xFF9900, wireframe: true });
+            const joint = new THREE.Mesh(jointGeo, jointMat);
+            joint.position.set(0.6, 2.5, 0);
+            activeModelGroup.add(joint);
+        }
+
+        function buildCNCModel() {
+            clearInspectorModel();
+            const bodyGeo = new THREE.CylinderGeometry(1.2, 1.2, 4, 32);
+            const bodyMat = new THREE.MeshStandardMaterial({ color: 0x1F2937, metalness: 0.9, roughness: 0.1 });
+            const body = new THREE.Mesh(bodyGeo, bodyMat);
+            activeModelGroup.add(body);
+
+            const bitGeo = new THREE.ConeGeometry(0.3, 1.2, 16);
+            const bitMat = new THREE.MeshStandardMaterial({ color: 0x00F2FE, metalness: 1.0 });
+            const bit = new THREE.Mesh(bitGeo, bitMat);
+            bit.rotation.x = Math.PI;
+            bit.position.y = -2.5;
+            activeModelGroup.add(bit);
+        }
+
+        function buildAGVModel() {
+            clearInspectorModel();
+            const chassisGeo = new THREE.BoxGeometry(3.5, 0.8, 2.2);
+            const chassisMat = new THREE.MeshStandardMaterial({ color: 0xFF9900, metalness: 0.6, roughness: 0.3 });
+            const chassis = new THREE.Mesh(chassisGeo, chassisMat);
+            activeModelGroup.add(chassis);
+
+            const lidarGeo = new THREE.CylinderGeometry(0.5, 0.5, 0.5, 16);
+            const lidarMat = new THREE.MeshStandardMaterial({ color: 0x00F2FE, wireframe: true });
+            const lidar = new THREE.Mesh(lidarGeo, lidarMat);
+            lidar.position.y = 0.65;
+            activeModelGroup.add(lidar);
+        }
+
+        function reset3DCamera() {
+            inspectorCamera.position.set(0, 3, 8);
+            activeModelGroup.rotation.set(0, 0, 0);
+        }
+
+        function selectEquipment(type) {
+            activeEquipmentType = type;
+
+            // Reset tab styles
+            ['robot', 'cnc', 'agv'].forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                if (t === type) {
+                    btn.className = "px-5 py-3 rounded-xl font-mono text-xs font-bold border transition-all flex items-center space-x-3 bg-brand-cyan text-black border-brand-cyan shadow-[0_0_15px_rgba(0,242,254,0.3)]";
+                } else {
+                    btn.className = "px-5 py-3 rounded-xl font-mono text-xs font-bold border transition-all flex items-center space-x-3 glass-panel text-slate-300 border-slate-800 hover:border-brand-cyan";
+                }
+            });
+
+            // Update 3D Model
+            if (type === 'robot') buildRobotModel();
+            else if (type === 'cnc') buildCNCModel();
+            else if (type === 'agv') buildAGVModel();
+
+            // Update UI Diagnostics
+            const data = equipmentData[type];
+            document.getElementById('inspector-model-title').textContent = data.title;
+            document.getElementById('hotspot-name').textContent = data.hotspot.name;
+            document.getElementById('hotspot-desc').textContent = data.hotspot.desc;
+            document.getElementById('diag-temp').textContent = data.hotspot.temp;
+            document.getElementById('diag-torque').textContent = data.hotspot.torque;
+            document.getElementById('diag-rul').textContent = data.hotspot.rul;
+        }
+
+        /* Waveform Live Canvas Graph */
+        function initWaveformCanvas() {
+            const canvas = document.getElementById('waveform-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let offset = 0;
+
+            function drawWaveform() {
+                requestAnimationFrame(drawWaveform);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                ctx.beginPath();
+                ctx.strokeStyle = '#00F2FE';
+                ctx.lineWidth = 2;
+
+                for (let x = 0; x < canvas.width; x++) {
+                    const y = (canvas.height / 2) + Math.sin((x + offset) * 0.05) * 20 + (Math.random() - 0.5) * 4;
+                    if (x === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+                offset += 2;
+            }
+            drawWaveform();
+        }
+
+        /* ==========================================================================
+           3. LIVE TELEMETRY SIMULATION COUNTERS
+           ========================================================================== */
+        let simSpeed = 1;
+        let unitsProduced = 14892;
+
+        function setSimSpeed(speed) {
+            simSpeed = speed;
+            ['1', '5', '10'].forEach(s => {
+                const btn = document.getElementById(`btn-speed-${s}`);
+                if (parseInt(s) === speed) {
+                    btn.className = "px-2.5 py-1 rounded font-mono text-xs font-bold bg-brand-cyan text-black transition-all";
+                } else {
+                    btn.className = "px-2.5 py-1 rounded font-mono text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-800 transition-all";
+                }
+            });
+            document.getElementById('units-rate').textContent = `+${(4.2 * speed).toFixed(1)} pcs/sec`;
+        }
+
+        setInterval(() => {
+            // Increment units
+            unitsProduced += Math.floor(Math.random() * 3 * simSpeed) + 1;
+            document.getElementById('units-metric').textContent = unitsProduced.toLocaleString();
+
+            // Fluctuate OEE slightly
+            const oee = (94.6 + (Math.random() * 0.4)).toFixed(1);
+            document.getElementById('oee-metric').textContent = oee;
+
+            // Fluctuate Hero values
+            const heroTemp = (42.0 + (Math.random() * 1.5)).toFixed(1);
+            document.getElementById('hero-temp-val').textContent = `${heroTemp} °C`;
+            document.getElementById('hero-temp-bar').style.width = `${heroTemp}%`;
+        }, 1000);
+
+        /* ==========================================================================
+           4. DYNAMIC PRODUCTION COST CALCULATOR ALGORITHM
+           ========================================================================== */
+        let calcState = {
+            material: 'titanium',
+            process: 'cnc5',
+            quantity: 500,
+            tolerance: 'precision',
+            finish: 'anodized'
+        };
+
+        const materialRates = {
+            titanium: { base: 45.0, name: "Titanium Grade 5" },
+            aluminum: { base: 18.0, name: "Aluminum 7075-T6" },
+            steel: { base: 24.0, name: "Stainless Steel 316L" }
+        };
+
+        const toleranceMultipliers = {
+            standard: 1.0,
+            precision: 1.35,
+            aerospace: 2.1
+        };
+
+        const finishAddons = {
+            'as-machined': 0,
+            'anodized': 6.5,
+            'electropolish': 12.0
+        };
+
+        function setCalcMaterial(mat) {
+            calcState.material = mat;
+            ['titanium', 'aluminum', 'steel'].forEach(m => {
+                const btn = document.getElementById(`mat-${m}`);
+                if (m === mat) {
+                    btn.className = "p-3 rounded-xl border font-mono text-xs text-left transition-all border-brand-cyan bg-brand-cyan/10 text-white shadow-[0_0_10px_rgba(0,242,254,0.2)]";
+                } else {
+                    btn.className = "p-3 rounded-xl border font-mono text-xs text-left transition-all border-slate-800 bg-slate-900/60 text-slate-300 hover:border-slate-600";
+                }
+            });
+            recalculateCost();
+        }
+
+        function recalculateCost() {
+            const qtySlider = document.getElementById('calc-qty-slider');
+            calcState.quantity = parseInt(qtySlider.value);
+            document.getElementById('calc-qty-val').textContent = `${calcState.quantity} Units`;
+
+            calcState.process = document.getElementById('calc-process').value;
+            calcState.tolerance = document.getElementById('calc-tolerance').value;
+            calcState.finish = document.getElementById('calc-finish').value;
+
+            // Algorithm calculation
+            const matBase = materialRates[calcState.material].base;
+            const tolMult = toleranceMultipliers[calcState.tolerance];
+            const finishCost = finishAddons[calcState.finish];
+
+            // Quantity curve (volume discount scale)
+            const qtyDiscount = Math.max(0.4, 1.0 - (Math.log10(calcState.quantity) * 0.15));
+
+            const rawUnitCost = (matBase * tolMult + finishCost) * qtyDiscount + 8.0;
+            const totalPrice = rawUnitCost * calcState.quantity;
+
+            document.getElementById('calc-unit-price').textContent = rawUnitCost.toFixed(2);
+            document.getElementById('calc-total-price').textContent = totalPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            // Lead time estimate based on quantity
+            let leadDays = 3;
+            if (calcState.quantity > 500) leadDays = 6;
+            if (calcState.quantity > 2000) leadDays = 12;
+            document.getElementById('calc-leadtime').textContent = `${leadDays} Business Days`;
+
+            // Update breakdown bar
+            document.getElementById('bar-material').style.width = '45%';
+            document.getElementById('bar-machining').style.width = '35%';
+            document.getElementById('bar-quality').style.width = '20%';
+        }
+
+        function exportQuoteSummary() {
+            showToast("Specification Summary Exported to PDF!");
+        }
+
+        function triggerCalibration() {
+            showToast("Sensor Re-calibration Cycle Triggered — Passed 100%");
+        }
+
+        /* ==========================================================================
+           5. MODAL & TOAST UTILITIES
+           ========================================================================== */
+        function toggleModal(show) {
+            const modal = document.getElementById('rfq-modal');
+            if (show) modal.classList.remove('hidden');
+            else modal.classList.add('hidden');
+        }
+
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            toggleModal(false);
+            showToast("RFQ Package Submitted to Engineering Hub!");
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').textContent = msg;
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3500);
+        }
+
+        /* Initialize on Window Load */
+        window.addEventListener('load', () => {
+            initHero3D();
+            initInspector3D();
+            recalculateCost();
+        });
+    </script>
+</body>
+</html>
